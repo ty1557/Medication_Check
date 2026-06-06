@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>お薬チェック</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="お薬チェック">
+    
+    <style>
+        body {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: calc(env(safe-area-inset-bottom) + 65px);
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-indigo-200">
+
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-sm">
+        <h1 class="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+            <i class="fa-solid fa-pills text-indigo-600"></i>お薬服用チェック
+        </h1>
+    </header>
+
+    <main class="flex-1 max-w-md w-full mx-auto px-4 py-4">
+        
+        <section id="tab-home" class="space-y-4">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                <div class="flex items-center justify-between mb-4">
+                    <button onclick="changeMonth(-1)" class="w-10 h-10 rounded-xl hover:bg-slate-100 active:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <h2 id="calendar-month" class="text-lg font-bold text-slate-800">2026年 6月</h2>
+                    <button onclick="changeMonth(1)" class="w-10 h-10 rounded-xl hover:bg-slate-100 active:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                
+                <div id="calendar-grid" class="grid grid-cols-7 gap-y-2 text-center text-sm">
+                    </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+                    <h3 id="selected-date-title" class="font-bold text-slate-900">日付</h3>
+                    <span id="completion-rate" class="text-xs font-semibold px-2 py-1 bg-slate-100 rounded-full text-slate-600">0/0 完了</span>
+                </div>
+                <div id="checklist-container" class="space-y-2.5">
+                    </div>
+            </div>
+        </section>
+
+        <section id="tab-settings" class="space-y-4 hidden">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                <h3 class="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-emerald-500"></i>新しいお薬の追加
+                </h3>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">お薬の名前</label>
+                        <input type="text" id="med-name" placeholder="例: ルパフィン錠" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 text-sm transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">飲むタイミング</label>
+                        <select id="med-time" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 text-sm transition-colors">
+                            <option value="朝食後">朝食後</option>
+                            <option value="昼食後">昼食後</option>
+                            <option value="夕食後">夕食後</option>
+                            <option value="就寝前">就寝前</option>
+                            <option value="頓服（必要時）">頓服（必要時）</option>
+                        </select>
+                    </div>
+                    <button onclick="addMedication()" class="w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-xl hover:bg-indigo-700 active:scale-[0.98] transition-all text-sm shadow-sm shadow-indigo-100">
+                        お薬を登録する
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                <h3 class="font-bold text-slate-900 mb-3">登録中のお薬一覧</h3>
+                <div id="med-manager-list" class="space-y-2">
+                    </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 px-6 py-2 flex justify-around items-center z-50">
+        <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center gap-1 text-indigo-600 transition-colors w-20">
+            <i class="fa-solid fa-calendar-check text-xl"></i>
+            <span class="text-[10px] font-medium">チェック</span>
+        </button>
+        <button onclick="switchTab('settings')" id="nav-settings" class="flex flex-col items-center gap-1 text-slate-400 transition-colors w-20">
+            <i class="fa-solid fa-gear text-xl"></i>
+            <span class="text-[10px] font-medium">お薬の管理</span>
+        </button>
+    </nav>
+
+    <script>
+        let currentYear, currentMonth;
+        let selectedDateStr; 
+        let medications = [];
+        let history = {};
+
+        // アプリ起動時の初期化
+        window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            currentYear = today.getFullYear();
+            currentMonth = today.getMonth();
+            selectedDateStr = formatDate(today);
+
+            // ローカルストレージからデータを復元
+            medications = JSON.parse(localStorage.getItem('medications')) || [];
+            history = JSON.parse(localStorage.getItem('med_history')) || {};
+
+            // 初期データが空の場合のサンプル
+            if (medications.length === 0) {
+                medications = [
+                    { id: 'sample1', name: 'サンプルの非アレルギー薬', time: '就寝前' },
+                    { id: 'sample2', name: 'ビタミン剤', time: '朝食後' }
+                ];
+                localStorage.setItem('medications', JSON.stringify(medications));
+            }
+
+            renderCalendar();
+            renderCheckList();
+        });
+
+        function formatDate(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        // カレンダー描画処理
+        function renderCalendar() {
+            document.getElementById('calendar-month').textContent = `${currentYear}年 ${currentMonth + 1}月`;
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+
+            // 曜日ヘッダー
+            const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+            weekdays.forEach((day, idx) => {
+                const el = document.createElement('div');
+                el.className = `text-center text-xs font-bold pb-2 ${idx === 0 ? 'text-rose-500' : idx === 6 ? 'text-sky-500' : 'text-slate-400'}`;
+                el.textContent = day;
+                grid.appendChild(el);
+            });
+
+            const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+            const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const prevTotalDays = new Date(currentYear, currentMonth, 0).getDate();
+
+            // 前月の埋め合わせマス
+            for (let i = firstDayIndex - 1; i >= 0; i--) {
+                const el = document.createElement('div');
+                el.className = 'text-center text-slate-200 py-2.5 text-sm';
+                el.textContent = prevTotalDays - i;
+                grid.appendChild(el);
+            }
+
+            // 当月の日付マス
+            const todayStr = formatDate(new Date());
+            for (let d = 1; d <= totalDays; d++) {
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const el = document.createElement('div');
+                
+                let bgClass = 'hover:bg-slate-100 rounded-full';
+                let textClass = 'text-slate-700 font-medium';
+                
+                if (dateStr === selectedDateStr) {
+                    bgClass = 'bg-indigo-600 text-white rounded-full font-bold shadow-sm shadow-indigo-200';
+                    textClass = 'text-white';
+                } else if (dateStr === todayStr) {
+                    bgClass = 'bg-indigo-50 border border-indigo-200 text-indigo-600 rounded-full font-bold';
+                    textClass = 'text-indigo-600';
+                }
+
+                el.className = `text-center py-1.5 text-sm cursor-pointer relative flex flex-col items-center justify-center m-0.5 transition-all ${bgClass}`;
+                
+                const dayNum = document.createElement('span');
+                dayNum.className = textClass;
+                dayNum.textContent = d;
+                el.appendChild(dayNum);
+
+                // 服薬状況に応じたドット表示インジケーター
+                const dayHistory = history[dateStr] || {};
+                const takenCount = Object.keys(dayHistory).filter(id => dayHistory[id] && medications.some(m => m.id === id)).length;
+                const totalCount = medications.length;
+
+                const dot = document.createElement('span');
+                dot.className = 'w-1.5 h-1.5 rounded-full mt-0.5 block transition-colors';
+                
+                if (totalCount > 0 && takenCount > 0) {
+                    if (takenCount === totalCount) {
+                        dot.className += dateStr === selectedDateStr ? ' bg-white' : ' bg-emerald-500';
+                    } else {
+                        dot.className += dateStr === selectedDateStr ? ' bg-white' : ' bg-amber-400';
+                    }
+                } else {
+                    dot.className += ' bg-transparent';
+                }
+                el.appendChild(dot);
+
+                el.addEventListener('click', () => {
+                    selectedDateStr = dateStr;
+                    renderCalendar();
+                    renderCheckList();
+                });
+                grid.appendChild(el);
+            }
+        }
+
+        // 当日の服用チェックリスト描画
+        function renderCheckList() {
+            const container = document.getElementById('checklist-container');
+            container.innerHTML = '';
+            
+            const dateObj = new Date(selectedDateStr);
+            const options = { weekday: 'short', month: 'short', day: 'numeric' };
+            document.getElementById('selected-date-title').textContent = dateObj.toLocaleDateString('ja-JP', options);
+
+            if (medications.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm"><i class="fa-solid fa-box-open text-2xl mb-2 block text-slate-300"></i>お薬が登録されていません。</div>`;
+                document.getElementById('completion-rate').textContent = "0/0 完了";
+                return;
+            }
+
+            const dayHistory = history[selectedDateStr] || {};
+            let takenCount = 0;
+
+            medications.forEach(med => {
+                const isChecked = dayHistory[med.id] || false;
+                if (isChecked) takenCount++;
+                
+                const item = document.createElement('div');
+                item.className = `flex items-center justify-between p-3.5 rounded-xl border transition-all ${isChecked ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50/50 border-slate-100 hover:border-slate-200'}`;
+                
+                item.innerHTML = `
+                    <div class="flex flex-col" onclick="toggleCheck('${med.id}')">
+                        <span class="font-bold text-sm ${isChecked ? 'line-through text-slate-400' : 'text-slate-800'}">${med.name}</span>
+                        <span class="text-xs text-slate-400 mt-0.5"><i class="fa-regular fa-clock mr-1 text-slate-400"></i>${med.time}</span>
+                    </div>
+                    <button onclick="toggleCheck('${med.id}')" class="w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all ${isChecked ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 text-transparent active:border-indigo-500'}">
+                        <i class="fa-solid fa-check text-base"></i>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+
+            document.getElementById('completion-rate').textContent = `${takenCount}/${medications.length} 完了`;
+            
+            // バッジの色変更
+            const rateBadge = document.getElementById('completion-rate');
+            if (medications.length > 0 && takenCount === medications.length) {
+                rateBadge.className = "text-xs font-semibold px-2 py-1 bg-emerald-100 rounded-full text-emerald-700";
+            } else {
+                rateBadge.className = "text-xs font-semibold px-2 py-1 bg-slate-100 rounded-full text-slate-600";
+            }
+        }
+
+        // チェック状態のON/OFF切り替え
+        function toggleCheck(medId) {
+            if (!history[selectedDateStr]) {
+                history[selectedDateStr] = {};
+            }
+            history[selectedDateStr][medId] = !history[selectedDateStr][medId];
+            localStorage.setItem('med_history', JSON.stringify(history));
+            
+            renderCheckList();
+            renderCalendar();
+        }
+
+        // お薬管理画面の一覧描画
+        function renderMedicationManager() {
+            const container = document.getElementById('med-manager-list');
+            container.innerHTML = '';
+
+            if (medications.length === 0) {
+                container.innerHTML = `<p class="text-center py-4 text-sm text-slate-400">お薬は未登録です。</p>`;
+                return;
+            }
+
+            medications.forEach(med => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl';
+                item.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="font-bold text-sm text-slate-800">${med.name}</span>
+                        <span class="text-xs text-slate-400 mt-0.5">${med.time}</span>
+                    </div>
+                    <button onclick="deleteMedication('${med.id}')" class="w-8 h-8 rounded-lg text-rose-500 hover:bg-rose-50 active:bg-rose-100 flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // お薬の新規追加
+        function addMedication() {
+            const nameInput = document.getElementById('med-name');
+            const timeSelect = document.getElementById('med-time');
+            
+            if (!nameInput.value.trim()) {
+                alert('お薬の名前を入力してください。');
+                return;
+            }
+
+            const newMed = {
+                id: 'med_' + Date.now(),
+                name: nameInput.value.trim(),
+                time: timeSelect.value
+            };
+
+            medications.push(newMed);
+            localStorage.setItem('medications', JSON.stringify(medications));
+            
+            nameInput.value = '';
+            renderMedicationManager();
+            alert('お薬を登録しました。');
+        }
+
+        // お薬の削除
+        function deleteMedication(id) {
+            if (confirm('このお薬を削除しますか？ (これまでの服薬履歴のドット表示にも影響します)')) {
+                medications = medications.filter(m => m.id !== id);
+                localStorage.setItem('medications', JSON.stringify(medications));
+                renderMedicationManager();
+            }
+        }
+
+        // 月切り替えボタン
+        function changeMonth(direction) {
+            currentMonth += direction;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            } else if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        }
+
+        // ボトムタブ切り替え
+        function switchTab(tabName) {
+            if (tabName === 'home') {
+                document.getElementById('tab-home').classList.remove('hidden');
+                document.getElementById('tab-settings').classList.add('hidden');
+                document.getElementById('nav-home').className = "flex flex-col items-center gap-1 text-indigo-600 transition-colors w-20";
+                document.getElementById('nav-settings').className = "flex flex-col items-center gap-1 text-slate-400 transition-colors w-20";
+                renderCalendar();
+                renderCheckList();
+            } else {
+                document.getElementById('tab-home').classList.add('hidden');
+                document.getElementById('tab-settings').classList.remove('hidden');
+                document.getElementById('nav-home').className = "flex flex-col items-center gap-1 text-slate-400 transition-colors w-20";
+                document.getElementById('nav-settings').className = "flex flex-col items-center gap-1 text-indigo-600 transition-colors w-20";
+                renderMedicationManager();
+            }
+        }
+    </script>
+</body>
+</html>

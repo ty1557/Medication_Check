@@ -136,7 +136,7 @@
             return `${y}-${m}-${d}`;
         }
 
-        // カレンダー描画処理（アップデート版）
+        // カレンダー描画処理（アップデート版2：チェックボックス風デザイン）
         function renderCalendar() {
             document.getElementById('calendar-month').textContent = `${currentYear}年 ${currentMonth + 1}月`;
             const grid = document.getElementById('calendar-grid');
@@ -175,52 +175,59 @@
                 const isComplete = totalCount > 0 && takenCount === totalCount;
                 const isPartial = totalCount > 0 && takenCount > 0 && takenCount < totalCount;
 
-                let bgClass = 'hover:bg-slate-100 rounded-full';
-                let textClass = 'text-slate-700 font-medium';
+                // 基本的なスタイル（角丸四角形に変更）
+                let baseClass = 'text-center py-1.5 text-sm cursor-pointer relative flex flex-col items-center justify-center m-0.5 transition-all rounded-xl aspect-square';
+                let bgClass = 'hover:bg-slate-100';
+                let textClass = 'text-slate-700 font-medium relative z-10'; // z-10でチェックマークより上
                 
+                // 【変更箇所】背景に大きなチェックマークを描くための要素
+                const bgCheck = document.createElement('i');
+                bgCheck.className = 'fa-solid fa-check absolute text-4xl opacity-0 transition-opacity z-0'; // 初期は透明
+
                 if (dateStr === selectedDateStr) {
                     // 現在タップして選択している日
-                    bgClass = 'bg-indigo-600 text-white rounded-full font-bold shadow-sm shadow-indigo-200';
-                    textClass = 'text-white';
+                    bgClass = 'bg-indigo-600 text-white font-bold shadow-sm shadow-indigo-200';
+                    textClass = 'text-white relative z-10';
+                    // 選択中の場合、薄い白のチェックマーク
+                    if (isComplete) {
+                        bgCheck.className += ' text-white/20 opacity-100'; // 薄い白で表示
+                    }
                 } else if (isComplete) {
-                    // 【変更箇所】すべて服用完了した日は優しい緑色の丸にする
-                    bgClass = 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-full font-bold';
-                    textClass = 'text-emerald-800';
+                    // 【変更箇所】すべて服用完了した日は角丸四角形全体を緑にする
+                    bgClass = 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold';
+                    textClass = 'text-emerald-800 relative z-10';
+                    // 大きな薄い緑のチェックマークを背景に表示
+                    bgCheck.className += ' text-emerald-600/30 opacity-100'; // 薄い緑で表示
                 } else if (dateStr === todayStr) {
                     // 今日（未完了）
-                    bgClass = 'bg-indigo-50 border border-indigo-200 text-indigo-600 rounded-full font-bold';
-                    textClass = 'text-indigo-600';
+                    bgClass = 'bg-indigo-50 border border-indigo-200 text-indigo-600 font-bold';
+                    textClass = 'text-indigo-600 relative z-10';
                 }
 
-                el.className = `text-center py-1.5 text-sm cursor-pointer relative flex flex-col items-center justify-center m-0.5 transition-all ${bgClass}`;
+                el.className = `${baseClass} ${bgClass}`;
                 
                 const dayNum = document.createElement('span');
                 dayNum.className = textClass;
                 dayNum.textContent = d;
                 el.appendChild(dayNum);
+                el.appendChild(bgCheck); // 背景チェックマークを追加
 
-                // 【変更箇所】数字の下に表示するアイコン
-                const indicator = document.createElement('span');
-                indicator.className = 'text-[9px] mt-0.5 h-3 flex items-center justify-center transition-colors';
-                
-                if (dateStr === selectedDateStr) {
-                    // 選択中のマスは背景が青いので白アイコンで表示
-                    if (isComplete) {
-                        indicator.innerHTML = '<i class="fa-solid fa-check text-white"></i>';
-                    } else if (isPartial) {
-                        indicator.className += ' w-1.5 h-1.5 rounded-full bg-white';
+                // 【変更箇所】数字の下に表示する小さなアイコン（一部完了時のドットは維持、完了時の小さなチェックは削除）
+                if (!isComplete && isPartial) {
+                    const indicator = document.createElement('span');
+                    indicator.className = 'text-[9px] mt-0.5 h-3 flex items-center justify-center transition-colors relative z-10';
+                    if (dateStr === selectedDateStr) {
+                         indicator.className += ' w-1.5 h-1.5 rounded-full bg-white';
+                    } else {
+                         indicator.className += ' w-1.5 h-1.5 rounded-full bg-amber-400';
                     }
+                     el.appendChild(indicator);
                 } else {
-                    // 通常時
-                    if (isComplete) {
-                        // 【ここを fa-xmark に変えるとバツ印になります】
-                        indicator.innerHTML = '<i class="fa-solid fa-check text-emerald-600 font-bold"></i>';
-                    } else if (isPartial) {
-                        // 一部だけ服用した日は今まで通り黄色のドット
-                        indicator.className += ' w-1.5 h-1.5 rounded-full bg-amber-400';
-                    }
+                    // スペース確保のための空要素
+                    const indicator = document.createElement('span');
+                    indicator.className = 'text-[9px] mt-0.5 h-3';
+                     el.appendChild(indicator);
                 }
-                el.appendChild(indicator);
 
                 el.addEventListener('click', () => {
                     selectedDateStr = dateStr;

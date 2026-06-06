@@ -52,7 +52,7 @@
                     <h3 id="selected-date-title" class="font-bold text-slate-900">日付</h3>
                     <span id="completion-rate" class="text-xs font-semibold px-2 py-1 bg-slate-100 rounded-full text-slate-600">0/0 完了</span>
                 </div>
-                <div id="checklist-container" class="space-y-2.5">
+                <div id="checklist-container" class="space-y-4 pt-1">
                     </div>
             </div>
         </section>
@@ -62,21 +62,50 @@
                 <h3 class="font-bold text-slate-900 mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-plus-circle text-emerald-500"></i>新しいお薬の追加
                 </h3>
-                <div class="space-y-3">
+                <div class="space-y-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 mb-1">お薬の名前</label>
                         <input type="text" id="med-name" placeholder="例: ルパフィン錠" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 text-sm transition-colors">
                     </div>
+                    
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">飲むタイミング</label>
-                        <select id="med-time" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 text-sm transition-colors">
-                            <option value="朝食後">朝食後</option>
-                            <option value="昼食後">昼食後</option>
-                            <option value="夕食後">夕食後</option>
-                            <option value="就寝前">就寝前</option>
-                            <option value="頓服（必要時）">頓服（必要時）</option>
-                        </select>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1.5">飲むタイミング（複数選択可）</label>
+                        <div class="grid grid-cols-2 gap-2" id="timing-checkbox-group">
+                            <label class="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer text-xs font-medium select-none transition-all active:scale-[0.98] has-[:checked]:bg-indigo-50 has-[:checked]:border-indigo-300 has-[:checked]:text-indigo-700">
+                                <input type="checkbox" name="med-time" value="朝食前" class="w-4 h-4 accent-indigo-600 rounded">
+                                <span>朝食前</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer text-xs font-medium select-none transition-all active:scale-[0.98] has-[:checked]:bg-indigo-50 has-[:checked]:border-indigo-300 has-[:checked]:text-indigo-700">
+                                <input type="checkbox" name="med-time" value="朝食後" class="w-4 h-4 accent-indigo-600 rounded">
+                                <span>朝食後</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer text-xs font-medium select-none transition-all active:scale-[0.98] has-[:checked]:bg-indigo-50 has-[:checked]:border-indigo-300 has-[:checked]:text-indigo-700">
+                                <input type="checkbox" name="med-time" value="昼食前" class="w-4 h-4 accent-indigo-600 rounded">
+                                <span>昼食前</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer text-xs font-medium select-none transition-all active:scale-[0.98] has-[:checked]:bg-indigo-50 has-[:checked]:border-indigo-300 has-[:checked]:text-indigo-700">
+                                <input type="checkbox" name="med-time" value="昼食後" class="w-4 h-4 accent-indigo-600 rounded">
+                                <span>昼食後</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer text-xs font-medium select-none transition-all active:scale-[0.98] has-[:checked]:bg-indigo-50 has-[:checked]:border-indigo-300 has-[:checked]:text-indigo-700">
+                                <input type="checkbox" name="med-time" value="夕食前" class="w-4 h-4 accent-indigo-600 rounded">
+                                <span>夕食前</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer text-xs font-medium select-none transition-all active:scale-[0.98] has-[:checked]:bg-indigo-50 has-[:checked]:border-indigo-300 has-[:checked]:text-indigo-700">
+                                <input type="checkbox" name="med-time" value="夕食後" class="w-4 h-4 accent-indigo-600 rounded">
+                                <span>夕食後</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer text-xs font-medium select-none transition-all active:scale-[0.98] has-[:checked]:bg-indigo-50 has-[:checked]:border-indigo-300 has-[:checked]:text-indigo-700">
+                                <input type="checkbox" name="med-time" value="就寝前" class="w-4 h-4 accent-indigo-600 rounded">
+                                <span>就寝前</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer text-xs font-medium select-none transition-all active:scale-[0.98] has-[:checked]:bg-indigo-50 has-[:checked]:border-indigo-300 has-[:checked]:text-indigo-700">
+                                <input type="checkbox" name="med-time" value="頓服（必要時）" class="w-4 h-4 accent-indigo-600 rounded">
+                                <span>頓服（必要時）</span>
+                            </label>
+                        </div>
                     </div>
+                    
                     <button onclick="addMedication()" class="w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-xl hover:bg-indigo-700 active:scale-[0.98] transition-all text-sm shadow-sm shadow-indigo-100">
                         お薬を登録する
                     </button>
@@ -108,6 +137,9 @@
         let medications = [];
         let history = {};
 
+        // 時系列順に並べたマスター配列
+        const TIMING_ORDER = ['朝食前', '朝食後', '昼食前', '昼食後', '夕食前', '夕食後', '就寝前', '頓服（必要時）'];
+
         window.addEventListener('DOMContentLoaded', () => {
             const today = new Date();
             currentYear = today.getFullYear();
@@ -117,10 +149,18 @@
             medications = JSON.parse(localStorage.getItem('medications')) || [];
             history = JSON.parse(localStorage.getItem('med_history')) || {};
 
+            // 旧データ（単一文字列のtime型）が存在する場合の配列型自動マイグレーション
+            medications.forEach(med => {
+                if (med.time && !med.times) {
+                    med.times = [med.time];
+                    delete med.time;
+                }
+            });
+
             if (medications.length === 0) {
                 medications = [
-                    { id: 'sample1', name: 'サンプルの非アレルギー薬', time: '就寝前' },
-                    { id: 'sample2', name: 'ビタミン剤', time: '朝食後' }
+                    { id: 'sample1', name: 'サンプルの非アレルギー薬', times: ['就寝前'] },
+                    { id: 'sample2', name: 'ビタミン剤', times: ['朝食前', '朝食後'] }
                 ];
                 localStorage.setItem('medications', JSON.stringify(medications));
             }
@@ -136,7 +176,27 @@
             return `${y}-${m}-${d}`;
         }
 
-        // カレンダー描画処理（アップデート版2：チェックボックス風デザイン）
+        // 1日の中の「総服薬タスク数」と「完了数」を算出する共通ヘルパー
+        function getDayStats(dateStr) {
+            let total = 0;
+            let taken = 0;
+            const dayHistory = history[dateStr] || {};
+
+            medications.forEach(med => {
+                if (med.times && med.times.length > 0) {
+                    med.times.forEach(t => {
+                        total++;
+                        // 履歴キーは「薬ID_タイミング名」で一意に識別
+                        if (dayHistory[`${med.id}_${t}`]) {
+                            taken++;
+                        }
+                    });
+                }
+            });
+            return { total, taken };
+        }
+
+        // カレンダー描画処理（チェックボックス風四角形デザイン維持）
         function renderCalendar() {
             document.getElementById('calendar-month').textContent = `${currentYear}年 ${currentMonth + 1}月`;
             const grid = document.getElementById('calendar-grid');
@@ -154,7 +214,6 @@
             const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
             const prevTotalDays = new Date(currentYear, currentMonth, 0).getDate();
 
-            // 前月の埋め合わせ
             for (let i = firstDayIndex - 1; i >= 0; i--) {
                 const el = document.createElement('div');
                 el.className = 'text-center text-slate-200 py-2.5 text-sm';
@@ -162,44 +221,32 @@
                 grid.appendChild(el);
             }
 
-            // 当月の日付
             const todayStr = formatDate(new Date());
             for (let d = 1; d <= totalDays; d++) {
                 const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 const el = document.createElement('div');
                 
-                // --- 服薬達成度の判定 ---
-                const dayHistory = history[dateStr] || {};
-                const takenCount = Object.keys(dayHistory).filter(id => dayHistory[id] && medications.some(m => m.id === id)).length;
-                const totalCount = medications.length;
-                const isComplete = totalCount > 0 && takenCount === totalCount;
-                const isPartial = totalCount > 0 && takenCount > 0 && takenCount < totalCount;
+                // 統計データの取得
+                const stats = getDayStats(dateStr);
+                const isComplete = stats.total > 0 && stats.taken === stats.total;
+                const isPartial = stats.total > 0 && stats.taken > 0 && stats.taken < stats.total;
 
-                // 基本的なスタイル（角丸四角形に変更）
                 let baseClass = 'text-center py-1.5 text-sm cursor-pointer relative flex flex-col items-center justify-center m-0.5 transition-all rounded-xl aspect-square';
                 let bgClass = 'hover:bg-slate-100';
-                let textClass = 'text-slate-700 font-medium relative z-10'; // z-10でチェックマークより上
+                let textClass = 'text-slate-700 font-medium relative z-10';
                 
-                // 【変更箇所】背景に大きなチェックマークを描くための要素
                 const bgCheck = document.createElement('i');
-                bgCheck.className = 'fa-solid fa-check absolute text-4xl opacity-0 transition-opacity z-0'; // 初期は透明
+                bgCheck.className = 'fa-solid fa-check absolute text-4xl opacity-0 transition-opacity z-0';
 
                 if (dateStr === selectedDateStr) {
-                    // 現在タップして選択している日
                     bgClass = 'bg-indigo-600 text-white font-bold shadow-sm shadow-indigo-200';
                     textClass = 'text-white relative z-10';
-                    // 選択中の場合、薄い白のチェックマーク
-                    if (isComplete) {
-                        bgCheck.className += ' text-white/20 opacity-100'; // 薄い白で表示
-                    }
+                    if (isComplete) bgCheck.className += ' text-white/20 opacity-100';
                 } else if (isComplete) {
-                    // 【変更箇所】すべて服用完了した日は角丸四角形全体を緑にする
                     bgClass = 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold';
                     textClass = 'text-emerald-800 relative z-10';
-                    // 大きな薄い緑のチェックマークを背景に表示
-                    bgCheck.className += ' text-emerald-600/30 opacity-100'; // 薄い緑で表示
+                    bgCheck.className += ' text-emerald-600/30 opacity-100';
                 } else if (dateStr === todayStr) {
-                    // 今日（未完了）
                     bgClass = 'bg-indigo-50 border border-indigo-200 text-indigo-600 font-bold';
                     textClass = 'text-indigo-600 relative z-10';
                 }
@@ -210,23 +257,17 @@
                 dayNum.className = textClass;
                 dayNum.textContent = d;
                 el.appendChild(dayNum);
-                el.appendChild(bgCheck); // 背景チェックマークを追加
+                el.appendChild(bgCheck);
 
-                // 【変更箇所】数字の下に表示する小さなアイコン（一部完了時のドットは維持、完了時の小さなチェックは削除）
                 if (!isComplete && isPartial) {
                     const indicator = document.createElement('span');
                     indicator.className = 'text-[9px] mt-0.5 h-3 flex items-center justify-center transition-colors relative z-10';
-                    if (dateStr === selectedDateStr) {
-                         indicator.className += ' w-1.5 h-1.5 rounded-full bg-white';
-                    } else {
-                         indicator.className += ' w-1.5 h-1.5 rounded-full bg-amber-400';
-                    }
-                     el.appendChild(indicator);
+                    indicator.className += dateStr === selectedDateStr ? ' w-1.5 h-1.5 rounded-full bg-white' : ' w-1.5 h-1.5 rounded-full bg-amber-400';
+                    el.appendChild(indicator);
                 } else {
-                    // スペース確保のための空要素
                     const indicator = document.createElement('span');
                     indicator.className = 'text-[9px] mt-0.5 h-3';
-                     el.appendChild(indicator);
+                    el.appendChild(indicator);
                 }
 
                 el.addEventListener('click', () => {
@@ -238,7 +279,7 @@
             }
         }
 
-        // 当日の服用チェックリスト描画
+        // 【大幅改修】タイミング別にグループ化してチェック画面を描画
         function renderCheckList() {
             const container = document.getElementById('checklist-container');
             container.innerHTML = '';
@@ -247,55 +288,76 @@
             const options = { weekday: 'short', month: 'short', day: 'numeric' };
             document.getElementById('selected-date-title').textContent = dateObj.toLocaleDateString('ja-JP', options);
 
-            if (medications.length === 0) {
-                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm"><i class="fa-solid fa-box-open text-2xl mb-2 block text-slate-300"></i>お薬が登録されていません。</div>`;
-                document.getElementById('completion-rate').textContent = "0/0 完了";
-                return;
-            }
-
-            const dayHistory = history[selectedDateStr] || {};
-            let takenCount = 0;
-
-            medications.forEach(med => {
-                const isChecked = dayHistory[med.id] || false;
-                if (isChecked) takenCount++;
-                
-                const item = document.createElement('div');
-                item.className = `flex items-center justify-between p-3.5 rounded-xl border transition-all ${isChecked ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50/50 border-slate-100 hover:border-slate-200'}`;
-                
-                item.innerHTML = `
-                    <div class="flex flex-col" onclick="toggleCheck('${med.id}')">
-                        <span class="font-bold text-sm ${isChecked ? 'line-through text-slate-400' : 'text-slate-800'}">${med.name}</span>
-                        <span class="text-xs text-slate-400 mt-0.5"><i class="fa-regular fa-clock mr-1 text-slate-400"></i>${med.time}</span>
-                    </div>
-                    <button onclick="toggleCheck('${med.id}')" class="w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all ${isChecked ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 text-transparent active:border-indigo-500'}">
-                        <i class="fa-solid fa-check text-base"></i>
-                    </button>
-                `;
-                container.appendChild(item);
-            });
-
-            document.getElementById('completion-rate').textContent = `${takenCount}/${medications.length} 完了`;
+            const stats = getDayStats(selectedDateStr);
+            document.getElementById('completion-rate').textContent = `${stats.taken}/${stats.total} 完了`;
             
             const rateBadge = document.getElementById('completion-rate');
-            if (medications.length > 0 && takenCount === medications.length) {
+            if (stats.total > 0 && stats.taken === stats.total) {
                 rateBadge.className = "text-xs font-semibold px-2 py-1 bg-emerald-100 rounded-full text-emerald-700";
             } else {
                 rateBadge.className = "text-xs font-semibold px-2 py-1 bg-slate-100 rounded-full text-slate-600";
             }
+
+            if (stats.total === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm"><i class="fa-solid fa-box-open text-2xl mb-2 block text-slate-300"></i>お薬が登録されていないか、タイミングが指定されていません。</div>`;
+                return;
+            }
+
+            const dayHistory = history[selectedDateStr] || {};
+
+            // 各タイミングを巡回してグループ化表示
+            TIMING_ORDER.forEach(timingKey => {
+                // この時間帯に対象となるお薬を抽出
+                const targetMeds = medications.filter(med => med.times && med.times.includes(timingKey));
+                if (targetMeds.length === 0) return; // 該当がなければスキップ
+
+                // グループ用コンテナ
+                const groupSection = document.createElement('div');
+                groupSection.className = 'space-y-1.5 bg-slate-50/50 p-2.5 rounded-xl border border-slate-100';
+
+                // タイミングヘッダー
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'flex items-center gap-1.5 text-xs font-bold text-indigo-600 px-1 mb-1';
+                headerDiv.innerHTML = `<i class="fa-regular fa-clock"></i><span>${timingKey}</span>`;
+                groupSection.appendChild(headerDiv);
+
+                // その時間帯の薬を並べる
+                targetMeds.forEach(med => {
+                    const uniqueKey = `${med.id}_${timingKey}`;
+                    const isChecked = dayHistory[uniqueKey] || false;
+
+                    const item = document.createElement('div');
+                    item.className = `flex items-center justify-between p-3 rounded-lg border bg-white transition-all ${isChecked ? 'border-emerald-200 bg-emerald-50/30' : 'border-slate-200/70 hover:border-slate-300'}`;
+                    
+                    item.innerHTML = `
+                        <div class="flex-1 min-w-0 pr-2" onclick="toggleCheck('${med.id}', '${timingKey}')">
+                            <span class="font-bold text-sm block truncate ${isChecked ? 'line-through text-slate-400' : 'text-slate-800'}">${med.name}</span>
+                        </div>
+                        <button onclick="toggleCheck('${med.id}', '${timingKey}')" class="w-8 h-8 rounded-full flex items-center justify-center border-2 flex-shrink-0 transition-all ${isChecked ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 text-transparent active:border-indigo-500'}">
+                            <i class="fa-solid fa-check text-xs"></i>
+                        </button>
+                    `;
+                    groupSection.appendChild(item);
+                });
+
+                container.appendChild(groupSection);
+            });
         }
 
-        function toggleCheck(medId) {
+        // チェック状態のON/OFF
+        function toggleCheck(medId, timingKey) {
             if (!history[selectedDateStr]) {
                 history[selectedDateStr] = {};
             }
-            history[selectedDateStr][medId] = !history[selectedDateStr][medId];
+            const uniqueKey = `${medId}_${timingKey}`;
+            history[selectedDateStr][uniqueKey] = !history[selectedDateStr][uniqueKey];
             localStorage.setItem('med_history', JSON.stringify(history));
             
             renderCheckList();
             renderCalendar();
         }
 
+        // 管理画面の一覧描画
         function renderMedicationManager() {
             const container = document.getElementById('med-manager-list');
             container.innerHTML = '';
@@ -306,14 +368,18 @@
             }
 
             medications.forEach(med => {
+                // タイミングを時系列順にソートしてバッジ形式で出力
+                const sortedTimes = TIMING_ORDER.filter(t => med.times && med.times.includes(t));
+                const badgesHtml = sortedTimes.map(t => `<span class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-medium">${t}</span>`).join(' ');
+
                 const item = document.createElement('div');
                 item.className = 'flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl';
                 item.innerHTML = `
-                    <div class="flex flex-col">
-                        <span class="font-bold text-sm text-slate-800">${med.name}</span>
-                        <span class="text-xs text-slate-400 mt-0.5">${med.time}</span>
+                    <div class="flex flex-col gap-1 flex-1 min-w-0 pr-2">
+                        <span class="font-bold text-sm text-slate-800 truncate">${med.name}</span>
+                        <div class="flex flex-wrap gap-1">${badgesHtml}</div>
                     </div>
-                    <button onclick="deleteMedication('${med.id}')" class="w-8 h-8 rounded-lg text-rose-500 hover:bg-rose-50 active:bg-rose-100 flex items-center justify-center transition-colors">
+                    <button onclick="deleteMedication('${med.id}')" class="w-8 h-8 rounded-lg text-rose-500 hover:bg-rose-50 active:bg-rose-100 flex items-center justify-center flex-shrink-0 transition-colors">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
                 `;
@@ -321,31 +387,41 @@
             });
         }
 
+        // お薬の新規追加
         function addMedication() {
             const nameInput = document.getElementById('med-name');
-            const timeSelect = document.getElementById('med-time');
+            const checkedBoxes = document.querySelectorAll('input[name="med-time"]:checked');
             
             if (!nameInput.value.trim()) {
                 alert('お薬の名前を入力してください。');
                 return;
             }
+            if (checkedBoxes.length === 0) {
+                alert('飲むタイミングを1つ以上選択してください。');
+                return;
+            }
+
+            const selectedTimes = Array.from(checkedBoxes).map(cb => cb.value);
 
             const newMed = {
                 id: 'med_' + Date.now(),
                 name: nameInput.value.trim(),
-                time: timeSelect.value
+                times: selectedTimes
             };
 
             medications.push(newMed);
             localStorage.setItem('medications', JSON.stringify(medications));
             
+            // 入力リセット
             nameInput.value = '';
+            checkedBoxes.forEach(cb => cb.checked = false);
+            
             renderMedicationManager();
             alert('お薬を登録しました。');
         }
 
         function deleteMedication(id) {
-            if (confirm('このお薬を削除しますか？ (これまでの服薬履歴のドット表示にも影響します)')) {
+            if (confirm('このお薬を削除しますか？ (服薬履歴データにも影響します)')) {
                 medications = medications.filter(m => m.id !== id);
                 localStorage.setItem('medications', JSON.stringify(medications));
                 renderMedicationManager();

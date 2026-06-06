@@ -19,9 +19,6 @@
             -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-indigo-200">
@@ -40,7 +37,7 @@
                     <button onclick="changeMonth(-1)" class="w-10 h-10 rounded-xl hover:bg-slate-100 active:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
                         <i class="fa-solid fa-chevron-left"></i>
                     </button>
-                    <h2 id="calendar-month" class="text-lg font-bold text-slate-800">2026年 6月</h2>
+                    <h2 id="calendar-month" class="text-lg font-bold text-slate-800">月</h2>
                     <button onclick="changeMonth(1)" class="w-10 h-10 rounded-xl hover:bg-slate-100 active:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
                         <i class="fa-solid fa-chevron-right"></i>
                     </button>
@@ -111,18 +108,15 @@
         let medications = [];
         let history = {};
 
-        // アプリ起動時の初期化
         window.addEventListener('DOMContentLoaded', () => {
             const today = new Date();
             currentYear = today.getFullYear();
             currentMonth = today.getMonth();
             selectedDateStr = formatDate(today);
 
-            // ローカルストレージからデータを復元
             medications = JSON.parse(localStorage.getItem('medications')) || [];
             history = JSON.parse(localStorage.getItem('med_history')) || {};
 
-            // 初期データが空の場合のサンプル
             if (medications.length === 0) {
                 medications = [
                     { id: 'sample1', name: 'サンプルの非アレルギー薬', time: '就寝前' },
@@ -142,13 +136,12 @@
             return `${y}-${m}-${d}`;
         }
 
-        // カレンダー描画処理
+        // カレンダー描画処理（アップデート版）
         function renderCalendar() {
             document.getElementById('calendar-month').textContent = `${currentYear}年 ${currentMonth + 1}月`;
             const grid = document.getElementById('calendar-grid');
             grid.innerHTML = '';
 
-            // 曜日ヘッダー
             const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
             weekdays.forEach((day, idx) => {
                 const el = document.createElement('div');
@@ -161,7 +154,7 @@
             const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
             const prevTotalDays = new Date(currentYear, currentMonth, 0).getDate();
 
-            // 前月の埋め合わせマス
+            // 前月の埋め合わせ
             for (let i = firstDayIndex - 1; i >= 0; i--) {
                 const el = document.createElement('div');
                 el.className = 'text-center text-slate-200 py-2.5 text-sm';
@@ -169,19 +162,32 @@
                 grid.appendChild(el);
             }
 
-            // 当月の日付マス
+            // 当月の日付
             const todayStr = formatDate(new Date());
             for (let d = 1; d <= totalDays; d++) {
                 const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 const el = document.createElement('div');
                 
+                // --- 服薬達成度の判定 ---
+                const dayHistory = history[dateStr] || {};
+                const takenCount = Object.keys(dayHistory).filter(id => dayHistory[id] && medications.some(m => m.id === id)).length;
+                const totalCount = medications.length;
+                const isComplete = totalCount > 0 && takenCount === totalCount;
+                const isPartial = totalCount > 0 && takenCount > 0 && takenCount < totalCount;
+
                 let bgClass = 'hover:bg-slate-100 rounded-full';
                 let textClass = 'text-slate-700 font-medium';
                 
                 if (dateStr === selectedDateStr) {
+                    // 現在タップして選択している日
                     bgClass = 'bg-indigo-600 text-white rounded-full font-bold shadow-sm shadow-indigo-200';
                     textClass = 'text-white';
+                } else if (isComplete) {
+                    // 【変更箇所】すべて服用完了した日は優しい緑色の丸にする
+                    bgClass = 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-full font-bold';
+                    textClass = 'text-emerald-800';
                 } else if (dateStr === todayStr) {
+                    // 今日（未完了）
                     bgClass = 'bg-indigo-50 border border-indigo-200 text-indigo-600 rounded-full font-bold';
                     textClass = 'text-indigo-600';
                 }
@@ -193,24 +199,28 @@
                 dayNum.textContent = d;
                 el.appendChild(dayNum);
 
-                // 服薬状況に応じたドット表示インジケーター
-                const dayHistory = history[dateStr] || {};
-                const takenCount = Object.keys(dayHistory).filter(id => dayHistory[id] && medications.some(m => m.id === id)).length;
-                const totalCount = medications.length;
-
-                const dot = document.createElement('span');
-                dot.className = 'w-1.5 h-1.5 rounded-full mt-0.5 block transition-colors';
+                // 【変更箇所】数字の下に表示するアイコン
+                const indicator = document.createElement('span');
+                indicator.className = 'text-[9px] mt-0.5 h-3 flex items-center justify-center transition-colors';
                 
-                if (totalCount > 0 && takenCount > 0) {
-                    if (takenCount === totalCount) {
-                        dot.className += dateStr === selectedDateStr ? ' bg-white' : ' bg-emerald-500';
-                    } else {
-                        dot.className += dateStr === selectedDateStr ? ' bg-white' : ' bg-amber-400';
+                if (dateStr === selectedDateStr) {
+                    // 選択中のマスは背景が青いので白アイコンで表示
+                    if (isComplete) {
+                        indicator.innerHTML = '<i class="fa-solid fa-check text-white"></i>';
+                    } else if (isPartial) {
+                        indicator.className += ' w-1.5 h-1.5 rounded-full bg-white';
                     }
                 } else {
-                    dot.className += ' bg-transparent';
+                    // 通常時
+                    if (isComplete) {
+                        // 【ここを fa-xmark に変えるとバツ印になります】
+                        indicator.innerHTML = '<i class="fa-solid fa-check text-emerald-600 font-bold"></i>';
+                    } else if (isPartial) {
+                        // 一部だけ服用した日は今まで通り黄色のドット
+                        indicator.className += ' w-1.5 h-1.5 rounded-full bg-amber-400';
+                    }
                 }
-                el.appendChild(dot);
+                el.appendChild(indicator);
 
                 el.addEventListener('click', () => {
                     selectedDateStr = dateStr;
@@ -260,7 +270,6 @@
 
             document.getElementById('completion-rate').textContent = `${takenCount}/${medications.length} 完了`;
             
-            // バッジの色変更
             const rateBadge = document.getElementById('completion-rate');
             if (medications.length > 0 && takenCount === medications.length) {
                 rateBadge.className = "text-xs font-semibold px-2 py-1 bg-emerald-100 rounded-full text-emerald-700";
@@ -269,7 +278,6 @@
             }
         }
 
-        // チェック状態のON/OFF切り替え
         function toggleCheck(medId) {
             if (!history[selectedDateStr]) {
                 history[selectedDateStr] = {};
@@ -281,7 +289,6 @@
             renderCalendar();
         }
 
-        // お薬管理画面の一覧描画
         function renderMedicationManager() {
             const container = document.getElementById('med-manager-list');
             container.innerHTML = '';
@@ -307,7 +314,6 @@
             });
         }
 
-        // お薬の新規追加
         function addMedication() {
             const nameInput = document.getElementById('med-name');
             const timeSelect = document.getElementById('med-time');
@@ -331,7 +337,6 @@
             alert('お薬を登録しました。');
         }
 
-        // お薬の削除
         function deleteMedication(id) {
             if (confirm('このお薬を削除しますか？ (これまでの服薬履歴のドット表示にも影響します)')) {
                 medications = medications.filter(m => m.id !== id);
@@ -340,7 +345,6 @@
             }
         }
 
-        // 月切り替えボタン
         function changeMonth(direction) {
             currentMonth += direction;
             if (currentMonth > 11) {
@@ -353,7 +357,6 @@
             renderCalendar();
         }
 
-        // ボトムタブ切り替え
         function switchTab(tabName) {
             if (tabName === 'home') {
                 document.getElementById('tab-home').classList.remove('hidden');
